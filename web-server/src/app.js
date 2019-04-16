@@ -15,6 +15,7 @@ app.set('views', viewsPath);
 hbs.registerPartials(partialsPath);
 
 //Setup static directory to serve
+//Normaly when the request come it look in 'publicDirectoryPath' according to line below and look for that specific filename (.html) 
 app.use(express.static(publicDirectoryPath)); //look for html file in specific folder (we use hbs instead)
 
 app.get('', (req, res) => {
@@ -35,6 +36,14 @@ app.get('/help', (req, res) => {
     res.render('help', {
         helpText: 'This is some help',
         title: 'Help', 
+        name: 'Sethanant'
+    })
+})
+
+app.get('/help/*', (req, res) => {
+    res.render('404', {
+        title: '404',
+        errorMessage: 'Help article not found',
         name: 'Sethanant'
     })
 })
@@ -60,6 +69,19 @@ app.get('/weather', (req, res) => {
         location: 'Nonthaburi'
     });
 })
+
+
+app.get('*', (req, res) => {
+    res.render('404', {
+        title: '404',
+        errorMessage: 'Page not found!',
+        name: 'Sethanant'
+    })
+})
+
+//route handler work like if statement top->bottom (the last one ('*') is like a 'else')
+
+
 
 app.listen(3000, () => {
     console.log('Server is up on port 3000');

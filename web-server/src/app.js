@@ -1,6 +1,8 @@
 const path = require('path');
 const express = require('express');
 const hbs = require('hbs');
+const geocode = require('./utils/geocode');
+const forecast = require('./utils/forecast');
 
 const app = express();
 
@@ -64,12 +66,53 @@ app.get('/about', (req, res) => {
 })
 */
 app.get('/weather', (req, res) => {
-    res.send({
-        forcast: `It's hot af`,
-        location: 'Nonthaburi'
-    });
+    if(req.query.address){
+        const address = req.query.address;
+        geocode(address, (err, geodata) => {
+            if(err){
+                res.send({ error: err });
+            }
+            else { 
+                const { latitude, longitude, location  } = geodata;
+                forecast(latitude, longitude, (error, forcastData) => {
+                    if(error){
+                        res.send({ error: error });
+                    }
+                    else {
+                        res.send({
+                            location: location,
+                            forcastData: forcastData,
+                            address: address
+                        });
+                    }
+                }
+                )}
+        })
+    }
+    
+
+    else { 
+        res.send({ error: 'You must provide address' });
+    }
 })
 
+/*
+//Example of string query
+app.get('/products', (req, res) => {
+    if(req.query.search){
+        return res.send({
+            product: []
+        });
+        //after return it quit without running another res.send down below
+    }
+    
+    res.send({
+        error: 'You must provide search term'
+    });
+
+
+})
+*/
 
 app.get('*', (req, res) => {
     res.render('404', {

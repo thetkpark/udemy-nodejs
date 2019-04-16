@@ -1,0 +1,1 @@
+console.log(`Client's side JS is running`);

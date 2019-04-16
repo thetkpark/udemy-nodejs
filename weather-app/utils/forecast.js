@@ -3,7 +3,8 @@ const request = require('request');
 const forecast = function (latitude, longitude, callback) {
     const url = `https://api.darksky.net/forecast/89aa36009c779e7050a7fdad84f43440/${latitude},${longitude}?units=si`
 
-    request({ url: url, json: true }, (err, res) => {
+    request({ url, json: true }, (err, res) => {
+        // Normal way => 'url: url' but its key and value is in the same name so shoten
         if(err){
             callback('Unable to connect to weather service!', undefined);
         }

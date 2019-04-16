@@ -37,15 +37,16 @@ request({ url: geocodeURL, json: true }, (err, res) => {
 
 const address = process.argv[2];
 if(address){
-    geocode(address, (err, coordinateData) => {
+    geocode(address, (err, { latitude, longitude, location  }) => { 
+                    //{ latitude, longitude, location  } is destructuring
         if(err) {
             return console.log(err);
         }
-        forecast(coordinateData.latitude, coordinateData.longitude, (error, forcastData) => {
+        forecast(latitude, longitude, (error, forcastData) => {
             if(error){
                 return console.log(error);
             }
-            console.log(`${coordinateData.location}`);
+            console.log(`${location}`);
             console.log(`${forcastData}`);
     
           });

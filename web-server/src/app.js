@@ -68,12 +68,13 @@ app.get('/about', (req, res) => {
 app.get('/weather', (req, res) => {
     if(req.query.address){
         const address = req.query.address;
-        geocode(address, (err, geodata) => {
+        geocode(address, (err, { latitude, longitude, location } = {}) => {
+            //set default value for { latitude, longitude, location } (destructure from res that return from geocode) to empty object 
             if(err){
                 res.send({ error: err });
             }
             else { 
-                const { latitude, longitude, location  } = geodata;
+                //set default res object to {} if it's undefined
                 forecast(latitude, longitude, (error, forcastData) => {
                     if(error){
                         res.send({ error: error });

@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const bcrypt = require('bcryptjs');
 
-//Create a database model
-const User = mongoose.model('User', {
+const userSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
@@ -33,6 +33,23 @@ const User = mongoose.model('User', {
             if(value < 0) throw new Error('Age must be positive number')
         }
     }
-});
+})
+//it takes two argument 1. what process 2.function
+userSchema.pre('save', async function (next) {
+    //this = docuement that is being save
+    const user = this;
+    
+    if(user.isModified('password')){
+        user.password = await bcrypt.hash(user.password, 8)
+    }
+
+    next() //call for tell mongoose that we're done. Move on
+})
+
+
+
+
+//Create a database model
+const User = mongoose.model('User', userSchema);
 
 module.exports = User;

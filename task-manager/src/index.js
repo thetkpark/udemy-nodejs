@@ -10,9 +10,22 @@ const taskRouter = require('./routers/tasks');
 const app = express()
 const port = process.env.PORT || 3000;
 
+/*
+//Middleware Functions
+app.use((req, res, next) => {
+    if(req.method == 'GET'){
+        res.send('GET request are disable');
+    }else {
+        next();
+    }
+
+})
+*/
+
+
+
+
 app.use(express.json()) //automatically parse json to object
-
-
 app.use(userRouter)
 app.use(taskRouter)
 

@@ -31,15 +31,9 @@ router.post('/users/login', async (req, res) => {
 })
 
 
-//Fetch all users
-router.get('/users', auth, async (req, res) => {
-    try{
-        const users = await User.find({})
-        res.send(users)
-    }
-    catch (err) {
-        res.status(500).send()
-    }
+//Fetch myself
+router.get('/users/me', auth, async (req, res) => {
+    res.send(req.user);
 })
 
 //Fetch user by id

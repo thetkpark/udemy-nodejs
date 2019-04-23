@@ -67,7 +67,8 @@ userSchema.methods.generateAuthToken = async function () {
 }
 
 
-userSchema.methods.getPublicProfile = function () {
+//In route handler 'res.send(user)' automatically use JSON.stringify() to object and .toJSON is called everytime stringify get called
+userSchema.methods.toJSON = function () {
     const user = this;
     const userObject = user.toObject()
 

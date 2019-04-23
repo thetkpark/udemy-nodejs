@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -33,10 +34,16 @@ const userSchema = new mongoose.Schema({
         validate(value){
             if(value < 0) throw new Error('Age must be positive number')
         }
-    }
+    },
+    tokens: [{
+        token:{
+            type: String,
+            required: true
+        }
+    }]
 })
 
-//Create new functions that can be used in route handler
+//Create new login functions that can be used in route handler
 userSchema.statics.findByCredentials = async (email, password) => {
     const user = await User.findOne({ email: email });
 
@@ -48,6 +55,15 @@ userSchema.statics.findByCredentials = async (email, password) => {
 
     return user
 }
+
+userSchema.methods.generateAuthToken = async function () {
+    const user = this;
+    const token = jwt.sign({ _id: user._id.toString() }, 'thisistoken')
+    user.tokens = user.tokens.concat({ token: token })
+    await user.save()
+    return token
+}
+
 
 
 

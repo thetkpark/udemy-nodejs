@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
     },
     email: {
         type: String,
+        unique: true,
         required: true,
         trim: true,
         lowercase: true,
@@ -34,13 +35,30 @@ const userSchema = new mongoose.Schema({
         }
     }
 })
+
+//Create new functions that can be used in route handler
+userSchema.statics.findByCredentials = async (email, password) => {
+    const user = await User.findOne({ email: email });
+
+    if(!user) throw new Error('Unable to login')
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if(!isMatch) throw new Error('Unable to login')
+
+    return user
+}
+
+
+
+//Hash plain text password before saving
 //it takes two argument 1. what process 2.function
 userSchema.pre('save', async function (next) {
     //this = docuement that is being save
     const user = this;
     
     if(user.isModified('password')){
-        user.password = await bcrypt.hash(user.password, 8)
+        user.password = await bcrypt.hash(user.password, 8) //(plain text password,times to hash)
     }
 
     next() //call for tell mongoose that we're done. Move on

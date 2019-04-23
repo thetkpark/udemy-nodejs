@@ -35,7 +35,7 @@ myFunction();
 
 
 /*
-//Middleware Functions
+//Demo Middleware Functions
 app.use((req, res, next) => {
     if(req.method == 'GET'){
         res.send('GET request are disable');
@@ -46,5 +46,21 @@ app.use((req, res, next) => {
 })
 */
 
+const Task = require('./models/tasks');
+const User = require('./models/users');
+
+const main = async () => {
+    //Task -> User's profile//
+    // const task = await Task.findById('5cbf28e07c53384bfa189747')
+    // await task.populate('owner').execPopulate()
+    // console.log(task.owner)
+
+    //From user to tasks by that user
+    const user = await User.findById('5cbf28110560a24b8fe09b31');
+    await user.populate('tasks').execPopulate()
+    console.log(user.tasks)
+}
+
+main()
 
 

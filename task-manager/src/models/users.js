@@ -43,6 +43,16 @@ const userSchema = new mongoose.Schema({
     }]
 })
 
+//Not actual store on db but for mongoose to see the connection btw two db
+userSchema.virtual('tasks', {
+    ref: 'Task',
+    localField: '_id',
+    foreignField: 'owner'
+})
+
+
+
+
 //Create new login functions that can be used in route handler
 userSchema.statics.findByCredentials = async (email, password) => {
     const user = await User.findOne({ email: email });

@@ -3,6 +3,8 @@ const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+const Task = require('./tasks');
+
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -41,6 +43,8 @@ const userSchema = new mongoose.Schema({
             required: true
         }
     }]
+},{
+    timestamps: true
 })
 
 //Not actual store on db but for mongoose to see the connection btw two db
@@ -101,10 +105,15 @@ userSchema.pre('save', async function (next) {
         user.password = await bcrypt.hash(user.password, 8) //(plain text password,times to hash)
     }
 
-    next() //call for tell mongoose that we're done. Move on
+    next(); //call for tell mongoose that we're done. Move on
 })
 
-
+//Delete task when user is deleted
+userSchema.pre('remove', async function (next) {
+    const user = this;
+    await Task.deleteMany({ owner: user._id })
+    next();
+})
 
 
 //Create a database model

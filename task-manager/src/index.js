@@ -46,6 +46,8 @@ app.use((req, res, next) => {
 })
 */
 
+/*
+//Populate Demo//
 const Task = require('./models/tasks');
 const User = require('./models/users');
 
@@ -61,6 +63,5 @@ const main = async () => {
     console.log(user.tasks)
 }
 
-main()
-
+main()*/
 

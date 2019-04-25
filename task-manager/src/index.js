@@ -65,3 +65,26 @@ const main = async () => {
 
 main()*/
 
+//Multer Demo (File upload)
+const multer = require('multer');
+const upload = multer({
+    dest: 'images', //destination (directory) to store the uploaded file
+    limits: {
+        fileSize: 1000000 //filezie in byte
+    },
+    fileFilter(req, file, cb){
+        // How to call cb (callback) function
+        // cb(new Error('File must be PDF')) // Sent error back
+        // cb(undefined, true) // Everthing alright, move on
+        // cb(undefined, false) // Silently reject
+
+        if(!file.originalname.match(/\.(doc|docx)$/)){ //regular expression 
+            return cb(new Error('Please upload a Word document'))
+        }
+        cb(undefined, true);
+    }
+})
+//upload.single is a middleware and ('upload') tell multer to look for key 'upload' from the request and get the file
+app.post('/upload', upload.single('upload'), (req ,res) => {
+    res.send()
+})

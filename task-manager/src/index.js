@@ -64,11 +64,11 @@ const main = async () => {
 }
 
 main()*/
-
+/*
 //Multer Demo (File upload)
 const multer = require('multer');
 const upload = multer({
-    dest: 'images', //destination (directory) to store the uploaded file
+    dest: 'images', //destination (directory) to store the uploaded file // If removed then multer doesn't put file in local but in req.file(.buffer)
     limits: {
         fileSize: 1000000 //filezie in byte
     },
@@ -84,7 +84,14 @@ const upload = multer({
         cb(undefined, true);
     }
 })
+
+
 //upload.single is a middleware and ('upload') tell multer to look for key 'upload' from the request and get the file
 app.post('/upload', upload.single('upload'), (req ,res) => {
     res.send()
+}, (err, req, res, next) => {
+    // Customize the error to not sent html back but JSON
+    res.status(400).send({ error: err.message })
 })
+
+*/

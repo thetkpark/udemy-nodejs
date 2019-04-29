@@ -3,7 +3,7 @@ const mongodb = require('mongodb');
 const MongoClient = mongodb.MongoClient;
 const ObjectID = mongodb.ObjectID;
 
-const connectionURL = `mongodb://127.0.0.1:27017`;
+//const connectionURL = `mongodb://127.0.0.1:27017`;
 const databaseName = `task-manager`;
 
 /*
@@ -14,7 +14,7 @@ console.log(id.id.length);
 console.log(id.toHexString().length);
 */
 
-MongoClient.connect(connectionURL, { useNewUrlParser: true }, (err, client) => { //establish the connection to db
+MongoClient.connect(process.env.MONGO_URL, { useNewUrlParser: true }, (err, client) => { //establish the connection to db
     if(err) return console.log('Unable to connect to database');
 
     const db = client.db(databaseName); //return the ref to db

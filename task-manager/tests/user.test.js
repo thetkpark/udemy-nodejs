@@ -96,3 +96,35 @@ test('Should not delete account for unauthenticate user', async () => {
         .send()
         .expect(401)
 })
+
+test('Should upload avatar image', async () => {
+    await request(app)
+        .post('/users/me/avatar')
+        .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
+        .attach('avatar', 'tests/fixtures/profile-pic.jpg')
+        .expect(200)
+
+    const user = await User.findById(userOneID);
+    //.toBe used === to compare and as we know one object doesn't same as onther with the same proproty
+    //Use .toEqual instead (It use algo to compare not something in memory)
+    expect(user.avatar).toEqual(expect.any(Buffer)) //check if user.avatar is equal to buffer data
+})
+
+test(`Should update valid user's fileds`, async () => {
+    await request(app)
+        .patch('/users/me')
+        .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
+        .send({ name: 'Andrew' })
+        .expect(200)
+
+    const user = await User.findById(userOneID)
+    expect(user.name).toBe('Andrew')
+})
+
+test(`Should not update invalid user's fileds`, async () => {
+    await request(app)
+        .patch('/users/me')
+        .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
+        .send({ location: 'Boston' })
+        .expect(400)
+})

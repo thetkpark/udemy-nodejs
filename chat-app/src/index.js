@@ -16,10 +16,18 @@ app.use(express.static(publicDirectoryPath));
 
 io.on('connection', (socket) => { 
     console.log('Web socket connected');
-    socket.emit('welcome', 'Welcome!')
-    socket.on('sendMessage', (message) => {
-        io.emit('newMessage', message);
+    socket.emit('newMessage', 'Welcome!') //Send greeting message
+
+    socket.broadcast.emit('newMessage', 'New user has joined'); //sent to everyone but myself
+
+    socket.on('sendMessage', (message) => { //wait for message that submit from html
+        io.emit('newMessage', message); //broadcast new message to everyone
     })
+
+    socket.on('disconnect', () => { //buit-in event when someone disconnect
+        io.emit('newMessage', 'A user has left');
+    }) 
+
 })
 
 server.listen(port, () => console.log(`Listening on port ${port}`));

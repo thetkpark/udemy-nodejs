@@ -12,17 +12,13 @@ const port = process.env.PORT || 3000;
 
 app.use(express.static(publicDirectoryPath));
 
-let count = 0;
+// let count = 0;
 
-io.on('connection', (socket) => { //1. Wait for connection from client
+io.on('connection', (socket) => { 
     console.log('Web socket connected');
-
-    socket.emit('countUpdated', count) //2.sending countUpdated 'event' to client
-
-    socket.on('increment', () => { //5. Wait for 'increment' to be sent from client
-        count++;
-        // socket.emit('countUpdated', count) //6. Send back the updated count (emit to specific connection)
-        io.emit('countUpdated', count) //Do the same as above but emit to all connection
+    socket.emit('welcome', 'Welcome!')
+    socket.on('sendMessage', (message) => {
+        io.emit('newMessage', message);
     })
 })
 

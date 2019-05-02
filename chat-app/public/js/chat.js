@@ -1,14 +1,54 @@
 //because of the scirpt in html we have access to client side of socket.io
 const socket = io();
 
+//server (emit) -> client (recive) --acknowledgement --> server 
+//client (emit) -> server (recive) --acknowledgement --> client 
 
+//Element
+const $messageForm = document.querySelector('#message-form')
+const $messageFormInput = $messageForm.querySelector('input')
+const $messageFormButton = $messageForm.querySelector('button')
+const $sendLocationButton = document.querySelector('#send-location');
 
-document.querySelector('#message-form').addEventListener('submit', (event) => {
+//Send message with user submit from html
+$messageForm.addEventListener('submit', (event) => {
     event.preventDefault()
+
+    //disable the form when sending to server
+    $messageFormButton.setAttribute('disabled', 'disabled') 
+
+
     const message = event.target.elements.message.value;
-    socket.emit('sendMessage', message);
+    socket.emit('sendMessage', message, (error) => { 
+        //Function that gonna run when event is acknowledged
+
+        //Reenable when finish with sending to server
+        $messageFormButton.removeAttribute('disabled');
+        $messageFormInput.value = '';
+        $messageFormInput.focus();
+        
+        if(error) return console.log(error)
+
+        console.log('Message Deliverd')
+    });
 })
 
+//Listen for new message
 socket.on('newMessage', message => {
     console.log(message)
 }) 
+
+//Send location
+$sendLocationButton.addEventListener('click', () => {
+    if(!navigator.geolocation) return alert('Geolocation is not supported by your browser')
+    $sendLocationButton.setAttribute('disabled', 'disabled')
+    navigator.geolocation.getCurrentPosition(position => {
+        socket.emit('sendLocation', {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+        }, () => {
+            $sendLocationButton.removeAttribute('disabled')
+            console.log('Location shared!')  
+        })
+    })
+})

@@ -2,6 +2,7 @@ const path = require('path');
 const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
+const Filter = require('bad-words')
 
 const app = express();
 const server = http.createServer(app); //Express do it behind the scene
@@ -20,13 +21,27 @@ io.on('connection', (socket) => {
 
     socket.broadcast.emit('newMessage', 'New user has joined'); //sent to everyone but myself
 
-    socket.on('sendMessage', (message) => { //wait for message that submit from html
+    socket.on('sendMessage', (message, callback) => { //wait for message that submit from html
+        const filter = new Filter()
+        //use ackknowledge to filter bad-words
+        if(filter.isProfane(message)) {
+            return callback('Profanity is not allow!')
+        }
+
         io.emit('newMessage', message); //broadcast new message to everyone
+        callback() //acknowledged
+
+    })
+
+    socket.on('sendLocation', (location, callback) => {
+        io.emit('newMessage', `https://google.com/maps?q=${location.latitude},${location.longitude}`);
+        callback()
     })
 
     socket.on('disconnect', () => { //buit-in event when someone disconnect
         io.emit('newMessage', 'A user has left');
     }) 
+
 
 })
 

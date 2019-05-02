@@ -5,10 +5,17 @@ const socket = io();
 //client (emit) -> server (recive) --acknowledgement --> client 
 
 //Element
-const $messageForm = document.querySelector('#message-form')
-const $messageFormInput = $messageForm.querySelector('input')
-const $messageFormButton = $messageForm.querySelector('button')
+const $messageForm = document.querySelector('#message-form');
+const $messageFormInput = $messageForm.querySelector('input');
+const $messageFormButton = $messageForm.querySelector('button');
 const $sendLocationButton = document.querySelector('#send-location');
+
+const $messages = document.querySelector('#messages');
+
+//Template
+const messageTemplate = document.querySelector('#message-template').innerHTML
+const locationMessageTemplate = document.querySelector('#location-message-template').innerHTML
+
 
 //Send message with user submit from html
 $messageForm.addEventListener('submit', (event) => {
@@ -33,15 +40,26 @@ $messageForm.addEventListener('submit', (event) => {
     });
 })
 
+
+
 //Listen for new message
 socket.on('newMessage', message => {
     console.log(message)
+    //Render a message
+    const html = Mustache.render(messageTemplate, {
+        message: message
+    })
+    $messages.insertAdjacentHTML('beforeend', html)
 }) 
+
+
 
 //Send location
 $sendLocationButton.addEventListener('click', () => {
     if(!navigator.geolocation) return alert('Geolocation is not supported by your browser')
-    $sendLocationButton.setAttribute('disabled', 'disabled')
+
+    $sendLocationButton.setAttribute('disabled', 'disabled') //set button to not to click
+
     navigator.geolocation.getCurrentPosition(position => {
         socket.emit('sendLocation', {
             latitude: position.coords.latitude,
@@ -51,4 +69,13 @@ $sendLocationButton.addEventListener('click', () => {
             console.log('Location shared!')  
         })
     })
+})
+
+socket.on('locationMessage', (mapsURL) => {
+    console.log(mapsURL);
+
+    const html = Mustache.render(locationMessageTemplate, {
+        url: mapsURL
+    })
+    $messages.insertAdjacentHTML('beforeend', html)
 })

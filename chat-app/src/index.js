@@ -17,9 +17,17 @@ app.use(express.static(publicDirectoryPath));
 
 io.on('connection', (socket) => { 
     console.log('Web socket connected');
-    socket.emit('newMessage', generateMessage('Welcome!')) //Send greeting message
 
-    socket.broadcast.emit('newMessage', generateMessage('New user has joined')); //sent to everyone but myself
+
+    socket.on('join', ({ username, room }) => {
+        socket.join(room)
+
+        socket.emit('newMessage', generateMessage('Welcome!')) //Send greeting message
+        socket.broadcast.to(room).emit('newMessage', generateMessage(`${username} has joined!`)); //sent to everyone but myself
+        //socket.broadcast.to(room).emit //Send broadcast to everyone except myself in specifci room
+        // io.to(room).emit() //send emit to everyone in specfic room
+    })
+
 
     socket.on('sendMessage', (message, callback) => { //wait for message that submit from html
         const filter = new Filter()
@@ -28,13 +36,13 @@ io.on('connection', (socket) => {
             return callback('Profanity is not allow!')
         }
 
-        io.emit('newMessage', generateMessage(message)); //broadcast new message to everyone
+        io.to('1234').emit('newMessage', generateMessage(message)); //broadcast new message to everyone
         callback() //acknowledged
 
     })
 
     socket.on('sendLocation', (location, callback) => {
-        io.emit('locationMessage', generateLocationMessage(location));
+        io.to('1234').emit('locationMessage', generateLocationMessage(location));
         callback()
     })
 

@@ -34,6 +34,12 @@ io.on('connection', (socket) => {
         socket.broadcast.to(user.room).emit('newMessage', generateMessage('Admin', `${user.username} has joined!`)); //sent to everyone but myself
         //socket.broadcast.to(room).emit //Send broadcast to everyone except myself in specifci room
         // io.to(room).emit() //send emit to everyone in specfic room
+
+        io.to(user.room).emit('roomData', { 
+            room: user.room,
+            users: getUsersInRoom(user.room)
+        })
+
         callback();
     })
 
@@ -62,8 +68,14 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => { //buit-in event when someone disconnect
         const user = removeUser(socket.id)
 
-        if(user) return io.to(user.room).emit('newMessage', generateMessage('Admin', `${user.username} has left!`));
-        
+        if(user) {
+            io.to(user.room).emit('newMessage', generateMessage('Admin', `${user.username} has left!`));
+    
+            io.to(user.room).emit('roomData', {
+                room: user.room,
+                users: getUsersInRoom(user.room)
+            })
+        }
     }) 
 
 

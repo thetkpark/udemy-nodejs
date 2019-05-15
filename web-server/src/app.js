@@ -125,8 +125,8 @@ app.get('*', (req, res) => {
 
 //route handler work like if statement top->bottom (the last one ('*') is like a 'else')
 
+const port = process.env.PORT || 8080;
 
-
-app.listen(80, () => {
-    console.log('Server is up on port 80');
+app.listen(port, () => {
+    console.log('Server is up on port ' + port);
 });
